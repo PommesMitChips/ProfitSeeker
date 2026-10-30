@@ -219,16 +219,21 @@ export function I18nProvider({
       .catch(() => {});
     const refresh = () => {
       const next = read(),
-        label = probe();
+        label = probe(),
+        languageChanged = next !== last;
+      // React may defer or replay the updater. Capture the comparison before
+      // advancing the polling cursor instead of reading mutable `last` inside it.
+      last = next;
       setSelection((old) => {
-        const language = next !== last ? normalizeLanguage(next) : old.language;
+        const language = languageChanged
+          ? normalizeLanguage(next)
+          : old.language;
         return old.language === language && old.probe === label
           ? old
           : { language, probe: label };
       });
-      last = next;
     };
-    const timer = window.setInterval(refresh, 500);
+    const timer = window.setInterval(refresh, 100);
     window.addEventListener("storage", refresh);
     window.addEventListener("focus", refresh);
     return () => {

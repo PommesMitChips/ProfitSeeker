@@ -4,7 +4,7 @@ An in-game crafting and trading calculator for **Ascend From Nine Mountains**.
 Compare ways to earn spirit stones, find market opportunities, and follow a
 caravan plan from a compact overlay.
 
-**Current release:** `0.3.0-alpha.4` · **Target game version:** `0.7.18-97c093b`
+**Current release:** `0.3.0-alpha.5` · **Target game version:** `0.7.18-97c093b`
 
 [Download a release](https://github.com/PommesMitChips/ProfitSeeker/releases) ·
 [Report an issue](https://github.com/PommesMitChips/ProfitSeeker/issues) ·

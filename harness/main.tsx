@@ -57,7 +57,8 @@ function FixtureLanguage() {
         onChange={(e) => {
           setLanguage(e.target.value);
           localStorage.setItem("GameLanguage", JSON.stringify(e.target.value));
-          window.dispatchEvent(new Event("storage"));
+          // Like the game's same-window write, this does not emit `storage`.
+          // The provider must detect it without relying on a synthetic event.
         }}
       >
         {languageOptions.map(([code, name]) => (
