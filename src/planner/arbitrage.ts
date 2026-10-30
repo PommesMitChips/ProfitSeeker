@@ -12,6 +12,7 @@ import {
 import { salePrice, saleable } from "../mechanics/pricing";
 import { finance } from "../mechanics/results";
 import { variantKey } from "../catalogue/readWorld";
+import { marketCatalogue, uniqueMarkets } from "../query/marketCatalogue";
 export interface ArbitrageRow extends Row {
   offers: Source[];
 }
@@ -25,7 +26,7 @@ export function cachedArbitrageRows(world: World): ArbitrageRow[] {
 }
 export function arbitrageRows(world: World): ArbitrageRow[] {
   const groups = new Map<string, { item: Item; offers: Source[] }>();
-  for (const sources of world.sources.values())
+  for (const sources of marketCatalogue(world).byItem.values())
     for (const source of sources) {
       if (
         source.kind !== "buy" ||
@@ -52,7 +53,7 @@ export function arbitrageRows(world: World): ArbitrageRow[] {
       groups.set(key, group);
     }
   return [...groups.values()].map(({ item, offers }) => {
-    const quotes = world.markets.map((m) => ({
+    const quotes = uniqueMarkets(world.markets).map((m) => ({
       market: m.name,
       marketId: m.id,
       availability: m.availability,
@@ -120,6 +121,8 @@ export function arbitrageRows(world: World): ArbitrageRow[] {
     );
     return {
       item,
+      buy: best ? value(best.cost) : unavailable,
+      purchases: offers,
       offers,
       alternatives,
       quotes,

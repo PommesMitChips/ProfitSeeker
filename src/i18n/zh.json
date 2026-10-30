@@ -210,5 +210,11 @@
   "Previous location": "上一地点",
   "Next location": "下一地点",
   "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.": "每件成本：{low}–{high}。返还随机；利润与回报率按全部预付成本计算。",
-  "Refunds: up to {count} ingredient units, chosen at random.": "返还：随机选择最多 {count} 份材料。"
+  "Refunds: up to {count} ingredient units, chosen at random.": "返还：随机选择最多 {count} 份材料。",
+  "Buy price": "买价",
+  "No confirmed purchase stock for this item.": "没有此物品的已确认可购库存。",
+  "Not stocked": "不出售",
+  "Purchase listings only. Sale quotes do not imply stock.": "买价仅来自市场商品。存在售出报价不代表市场出售该物品。",
+  "Markets that sell this item": "可购买此物品的市场",
+  "Markets that buy this item": "收购此物品的市场"
 }

@@ -32,7 +32,7 @@ export function readPreferences(state: Raw): Preferences {
     inventory: bool(options.inventory, true),
   };
   base.sort = {
-    key: ["item", "cost", "sale", "profit", "roi"].includes(str(sort.key))
+    key: ["item", "cost", "buy", "sale", "profit", "roi"].includes(str(sort.key))
       ? (sort.key as Preferences["sort"]["key"])
       : "profit",
     descending: bool(sort.descending, true),

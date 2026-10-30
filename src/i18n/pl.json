@@ -210,5 +210,11 @@
   "Previous location": "Poprzednie miejsce",
   "Next location": "Następne miejsce",
   "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.": "Koszt: {low}–{high} za sztukę. Zwroty są zmienne; zysk i rentowność uwzględniają pełny koszt początkowy.",
-  "Refunds: up to {count} ingredient units, chosen at random.": "Zwrot: do {count} losowo wybranych jednostek składników."
+  "Refunds: up to {count} ingredient units, chosen at random.": "Zwrot: do {count} losowo wybranych jednostek składników.",
+  "Buy price": "Cena zakupu",
+  "No confirmed purchase stock for this item.": "Brak potwierdzonego zapasu tego przedmiotu do zakupu.",
+  "Not stocked": "Poza asortymentem",
+  "Purchase listings only. Sale quotes do not imply stock.": "Ceny zakupu wynikają z asortymentu. Cena sprzedaży nie oznacza, że rynek oferuje przedmiot.",
+  "Markets that sell this item": "Rynki sprzedające ten przedmiot",
+  "Markets that buy this item": "Rynki skupujące ten przedmiot"
 }

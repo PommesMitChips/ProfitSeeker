@@ -210,5 +210,11 @@
   "Previous location": "สถานที่ก่อนหน้า",
   "Next location": "สถานที่ถัดไป",
   "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.": "ต้นทุนต่อชิ้น: {low}–{high} การคืนวัตถุดิบไม่แน่นอน กำไรและผลตอบแทนใช้ต้นทุนเต็มที่จ่ายล่วงหน้า",
-  "Refunds: up to {count} ingredient units, chosen at random.": "คืนวัตถุดิบสูงสุด {count} หน่วยโดยสุ่มเลือก"
+  "Refunds: up to {count} ingredient units, chosen at random.": "คืนวัตถุดิบสูงสุด {count} หน่วยโดยสุ่มเลือก",
+  "Buy price": "ราคาซื้อ",
+  "No confirmed purchase stock for this item.": "ไม่มีสินค้าที่ซื้อได้ซึ่งยืนยันแล้วสำหรับไอเทมนี้",
+  "Not stocked": "ไม่มีขาย",
+  "Purchase listings only. Sale quotes do not imply stock.": "ราคาซื้ออ้างอิงรายการสินค้าของตลาด ราคาขายไม่ได้หมายความว่าตลาดมีสินค้านี้ขาย",
+  "Markets that sell this item": "ตลาดที่ขายไอเทมนี้",
+  "Markets that buy this item": "ตลาดที่รับซื้อไอเทมนี้"
 }

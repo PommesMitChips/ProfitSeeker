@@ -1,4 +1,5 @@
 import { useI18n, english, I18n } from "../i18n";
+import { purchaseListings } from "../query/marketCatalogue";
 import React, { useState } from "react";
 import {
   Box,
@@ -105,9 +106,12 @@ function IngredientPreview({
     { t } = i18n;
 
   const item = world.items.get(name);
-  const sources = (world.sources.get(name) ?? []).filter(
-    (s) => s.kind !== "recipe",
-  );
+  const sources = [
+    ...purchaseListings(world, name),
+    ...(world.sources.get(name) ?? []).filter(
+      (s) => s.kind !== "recipe" && s.kind !== "buy",
+    ),
+  ];
   return (
     <Box
       data-preview-owner={owner}
@@ -123,7 +127,8 @@ function IngredientPreview({
         <TableHead>
           <TableRow>
             <TableCell>{t("Source")}</TableCell>
-            <TableCell align="right">{t("Price")}</TableCell>
+            <TableCell align="right">{t("Buy price")}</TableCell>
+            <TableCell align="right">{t("Stock")}</TableCell>
             <TableCell>{t("Status")}</TableCell>
           </TableRow>
         </TableHead>
@@ -140,6 +145,13 @@ function IngredientPreview({
                 {source.cost && source.currency
                   ? ` ${i18n.gameText(t(source.currency))}`
                   : ""}
+              </TableCell>
+              <TableCell align="right">
+                {source.kind === "buy"
+                  ? source.quantity === undefined
+                    ? t("Unknown")
+                    : i18n.n(source.quantity)
+                  : "—"}
               </TableCell>
               <TableCell>{t(source.availability)}</TableCell>
             </TableRow>

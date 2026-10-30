@@ -61,7 +61,7 @@ function Routes({ row }: { row: ArbitrageRow }) {
               t("Buy at"),
               t("Sell at"),
               t("Stock"),
-              t("Cost"),
+              t("Buy price"),
               t("Sale"),
               t("Profit"),
               t("ROI"),
@@ -73,7 +73,7 @@ function Routes({ row }: { row: ArbitrageRow }) {
         <TableBody>
           {row.alternatives.map((a, i) => (
             <TableRow
-              key={`${a.route.id}:${a.quote.market}`}
+              key={`${a.route.id}:${a.quote.marketId ?? a.quote.market}`}
               selected={i === 0}
             >
               <TableCell>
@@ -159,7 +159,7 @@ export function ArbitragePanel({
     pinned = rows.find((r) => r.item.key === selected);
   const headings: [SortKey, string][] = [
     ["item", t("Item")],
-    ["cost", t("Cost")],
+    ["cost", t("Buy price")],
     ["sale", t("Sale price")],
     ["profit", t("Profit")],
     ["roi", t("ROI")],

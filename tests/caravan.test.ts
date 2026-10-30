@@ -19,6 +19,7 @@ test("a basket buys multiple goods before sharing one journey and its cost", () 
       ],
     );
   w.markets = [
+    {id:"A",name:"A",availability:"available",bonus:0,multiplier:1,raw:{}},
     {
       id: "B",
       name: "B",
@@ -29,6 +30,7 @@ test("a basket buys multiple goods before sharing one journey and its cost", () 
     },
   ];
   const rows = arbitrageRows(w);
+  for (const r of rows) r.alternatives=r.alternatives.filter(a=>a.quote.marketId==='B');
   for (const r of rows)
     for (const a of r.alternatives) {
       a.sale = 30;

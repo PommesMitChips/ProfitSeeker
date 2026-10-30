@@ -210,5 +210,11 @@
   "Previous location": "Previous location",
   "Next location": "Next location",
   "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.": "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.",
-  "Refunds: up to {count} ingredient units, chosen at random.": "Refunds: up to {count} ingredient units, chosen at random."
+  "Refunds: up to {count} ingredient units, chosen at random.": "Refunds: up to {count} ingredient units, chosen at random.",
+  "Buy price": "Buy price",
+  "No confirmed purchase stock for this item.": "No confirmed purchase stock for this item.",
+  "Not stocked": "Not stocked",
+  "Purchase listings only. Sale quotes do not imply stock.": "Purchase listings only. Sale quotes do not imply stock.",
+  "Markets that sell this item": "Markets that sell this item",
+  "Markets that buy this item": "Markets that buy this item"
 }

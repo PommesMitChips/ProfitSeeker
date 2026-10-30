@@ -210,5 +210,11 @@
   "Previous location": "Địa điểm trước",
   "Next location": "Địa điểm sau",
   "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.": "Chi phí: {low}–{high} mỗi vật phẩm. Hoàn trả biến động; lợi nhuận và tỷ suất dùng toàn bộ chi phí ban đầu.",
-  "Refunds: up to {count} ingredient units, chosen at random.": "Hoàn trả tối đa {count} đơn vị nguyên liệu được chọn ngẫu nhiên."
+  "Refunds: up to {count} ingredient units, chosen at random.": "Hoàn trả tối đa {count} đơn vị nguyên liệu được chọn ngẫu nhiên.",
+  "Buy price": "Giá mua",
+  "No confirmed purchase stock for this item.": "Chưa có tồn kho mua được xác nhận cho vật phẩm này.",
+  "Not stocked": "Không bán",
+  "Purchase listings only. Sale quotes do not imply stock.": "Giá mua dựa trên hàng của chợ. Có giá bán lại không có nghĩa chợ bán vật phẩm đó.",
+  "Markets that sell this item": "Chợ bán vật phẩm này",
+  "Markets that buy this item": "Chợ thu mua vật phẩm này"
 }

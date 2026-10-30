@@ -84,6 +84,7 @@ test("missing values sort last in both directions for every numeric column", () 
     ({
       item: item(name),
       cost: metric,
+      buy: metric,
       sale: metric,
       profit: metric,
       roi: metric,

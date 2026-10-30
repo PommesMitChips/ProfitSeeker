@@ -4,7 +4,7 @@ import { TARGET_VERSION } from "./catalogue/readWorld";
 import {I18nProvider} from './i18n';
 const metadata = {
   name: "Profit Seeker",
-  version: "0.3.0-alpha.5",
+  version: "0.3.0-alpha.6",
   author: { name: "PommesMitChips" },
   description: "Compare spirit-stone acquisition, crafting and market returns.",
   gameVersion: TARGET_VERSION,

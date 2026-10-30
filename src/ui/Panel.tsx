@@ -44,6 +44,7 @@ import {
   str,
   REALMS,
 } from "../domain/model";
+import { MarketDetails, ReturnDetails } from "./MarketDetails";
 import { GameAPI, RecipeReader, ScreenAPI } from "../game/api";
 import { tierLabel } from "../query/itemPreview";
 import { readWorld } from "../catalogue/readWorld";
@@ -109,36 +110,16 @@ function NumericPreview({ row, column }: { row: Row; column: SortKey }) {
   const number = i18n.n;
   const metric = (m: Metric, k?: SortKey) => metricText(m, k, i18n);
 
-  const quotes = [...row.quotes].sort((a, b) =>
-    a.availability === "available" && b.availability !== "available"
-      ? -1
-      : b.availability === "available" && a.availability !== "available"
-        ? 1
-        : (b.price.state === "value" ? b.price.value : -Infinity) -
-          (a.price.state === "value" ? a.price.value : -Infinity),
-  );
-  const alternatives = [...row.alternatives].sort((a, b) =>
-    column === "cost"
-      ? a.cost - b.cost
-      : column === "roi"
-        ? a.roi === undefined
-          ? 1
-          : b.roi === undefined
-            ? -1
-            : b.roi - a.roi
-        : b.profit - a.profit,
-  );
-  const headlineMarket =
-    row.alternatives[0]?.quote.market ??
-    quotes.find(
-      (q) =>
-        q.availability === "available" &&
-        q.price.state === "value" &&
-        row.sale.state === "value" &&
-        q.price.value === row.sale.value,
-    )?.market;
   return (
-    <Box sx={{ maxWidth: 570, maxHeight: "40vh", overflow: "auto", p: 1 }}>
+    <Box
+      sx={{
+        maxWidth: 720,
+        maxHeight: "60vh",
+        overflow: "auto",
+        p: 1.5,
+        "& p": { lineHeight: 1.6, mb: 1 },
+      }}
+    >
       <Typography fontWeight={700}>{row.item.label}</Typography>
       {row.route?.output && (
         <Typography variant="body2">
@@ -146,116 +127,39 @@ function NumericPreview({ row, column }: { row: Row; column: SortKey }) {
           {t("{count} gold stars", { count: row.route.quality })}
         </Typography>
       )}
-      {row.cost.state === "value" && row.cost.lower !== undefined && (
-        <Typography variant="body2">
-          {t(
-            "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.",
-            { low: row.cost.lower, high: row.cost.value },
-          )}
-        </Typography>
-      )}
-      {!!row.route?.output?.refundMax && (
-        <Typography variant="body2">
-          {t("Refunds: up to {count} ingredient units, chosen at random.", {
-            count: row.route.output.refundMax,
-          })}
-        </Typography>
-      )}
-      {column !== "item" && row[column].state !== "value" && (
-        <Typography variant="body2">
-          {(row[column] as Exclude<Metric, { state: "value" }>).reason
-            ? t((row[column] as Exclude<Metric, { state: "value" }>).reason)
-            : ""}
-        </Typography>
-      )}
-      {column === "sale" ? (
-        <Table size="small" aria-label={t("Ranked sale markets")}>
-          <TableHead>
-            <TableRow>
-              <TableCell>{t("Market")}</TableCell>
-              <TableCell align="right">{t("Sale price")}</TableCell>
-              <TableCell>{t("Status")}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {quotes.map((q) => (
-              <TableRow key={q.market} selected={q.market === headlineMarket}>
-                <TableCell>
-                  <Box component="span" sx={{ display: "block" }}>
-                    {q.market}
-                  </Box>
-                  {q.market === headlineMarket && (
-                    <Typography
-                      component="span"
-                      variant="caption"
-                      sx={{
-                        display: "block",
-                        mt: 0.5,
-                        fontSize: "0.75rem",
-                        lineHeight: 1.4,
-                        color: "text.secondary",
-                      }}
-                    >
-                      {t("Used in table")}
-                    </Typography>
-                  )}
-                </TableCell>
-                <TableCell align="right">{metric(q.price)}</TableCell>
-                <TableCell>{t(q.availability)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      {column !== "sale" &&
+        column !== "buy" &&
+        row.cost.state === "value" &&
+        row.cost.lower !== undefined && (
+          <Typography variant="body2">
+            {t(
+              "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.",
+              { low: row.cost.lower, high: row.cost.value },
+            )}
+          </Typography>
+        )}
+      {column !== "sale" &&
+        column !== "buy" &&
+        !!row.route?.output?.refundMax && (
+          <Typography variant="body2">
+            {t("Refunds: up to {count} ingredient units, chosen at random.", {
+              count: row.route.output.refundMax,
+            })}
+          </Typography>
+        )}
+      {column !== "item" &&
+        column !== "buy" &&
+        row[column].state !== "value" && (
+          <Typography variant="body2">
+            {(row[column] as Exclude<Metric, { state: "value" }>).reason
+              ? t((row[column] as Exclude<Metric, { state: "value" }>).reason)
+              : ""}
+          </Typography>
+        )}
+      {column === "sale" || column === "buy" ? (
+        <MarketDetails row={row} buyOnly={column === "buy"} />
       ) : (
-        <Table size="small" aria-label={t("Ranked returns")}>
-          <TableHead>
-            <TableRow>
-              <TableCell>{t("Sell at")}</TableCell>
-              <TableCell align="right">{t("Cost")}</TableCell>
-              <TableCell align="right">{t("Sale price")}</TableCell>
-              <TableCell align="right">{t("Profit")}</TableCell>
-              <TableCell align="right">{t("ROI")}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {alternatives.map((a, i) => (
-              <TableRow
-                key={`${a.route.id}:${a.quote.market}:${i}`}
-                selected={a === row.alternatives[0]}
-              >
-                <TableCell>
-                  {a.quote.market}
-                  <Typography variant="caption" display="block">
-                    {t("Inputs for {quantity} output:", {
-                      quantity: a.route.quantity,
-                    })}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    display="block"
-                    sx={{ maxWidth: 230 }}
-                  >
-                    {a.route.steps
-                      .filter((s) =>
-                        ["inventory", "farm", "buy"].includes(s.kind),
-                      )
-                      .map(
-                        (s) =>
-                          `${t(s.kind)}: ${number(s.quantity)} × ${i18n.gameText(s.item)}${s.kind === "inventory" ? "" : ` (${i18n.stepLabel(s)})`}`,
-                      )
-                      .join("; ") || t(a.route.basis)}
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">{number(a.cost)}</TableCell>
-                <TableCell align="right">{number(a.sale)}</TableCell>
-                <TableCell align="right">{number(a.profit)}</TableCell>
-                <TableCell align="right">
-                  {a.roi === undefined ? "—" : i18n.p(a.roi)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <ReturnDetails row={row} column={column} />
       )}
       {!row.complete && (
         <Typography variant="caption">
@@ -264,7 +168,11 @@ function NumericPreview({ row, column }: { row: Row; column: SortKey }) {
           )}
         </Typography>
       )}
-      <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+      <Typography
+        component="div"
+        variant="caption"
+        sx={{ display: "block", mt: 1.5, lineHeight: 1.6 }}
+      >
         {t(
           "Per finished item. Click to pin. Zero-cost ROI: no spirit-stone investment.",
         )}
@@ -351,11 +259,13 @@ function Detail({
               metric: t(
                 column === "cost"
                   ? "Cost"
-                  : column === "sale"
-                    ? "Sale price"
-                    : column === "roi"
-                      ? "ROI"
-                      : "Profit",
+                  : column === "buy"
+                    ? "Buy price"
+                    : column === "sale"
+                      ? "Sale price"
+                      : column === "roi"
+                        ? "ROI"
+                        : "Profit",
               ),
             })}
           </Typography>
@@ -538,6 +448,7 @@ function LoadedPanel({
   const headings: [SortKey, string][] = [
     ["item", t("Item")],
     ["cost", t("Cost")],
+    ["buy", t("Buy price")],
     ["sale", t("Sale price")],
     ["profit", t("Profit")],
     ["roi", t("ROI")],
@@ -979,7 +890,7 @@ function LoadedPanel({
                                       color: "text.primary",
                                       border: 1,
                                       borderColor: "divider",
-                                      maxWidth: 620,
+                                      maxWidth: 760,
                                       p: 1,
                                     },
                                   },
@@ -1027,7 +938,7 @@ function LoadedPanel({
                       ))}
                     {!loading && !rows.length && (
                       <TableRow>
-                        <TableCell colSpan={5}>
+                        <TableCell colSpan={headings.length}>
                           <Typography sx={{ py: 4, textAlign: "center" }}>
                             {t(
                               "No items match these filters. Clear the search or broaden the realm and recipe filters.",

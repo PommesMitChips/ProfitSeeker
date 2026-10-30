@@ -210,5 +210,11 @@
   "Previous location": "이전 장소",
   "Next location": "다음 장소",
   "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.": "개당 비용: {low}–{high}. 재료 반환은 무작위이며 이익과 수익률은 전체 선불 비용 기준입니다.",
-  "Refunds: up to {count} ingredient units, chosen at random.": "반환: 무작위 재료 최대 {count}개."
+  "Refunds: up to {count} ingredient units, chosen at random.": "반환: 무작위 재료 최대 {count}개.",
+  "Buy price": "구매 가격",
+  "No confirmed purchase stock for this item.": "이 아이템의 구매 가능한 재고가 확인되지 않았습니다.",
+  "Not stocked": "판매 품목 아님",
+  "Purchase listings only. Sale quotes do not imply stock.": "구매 가격은 시장 판매 목록 기준입니다. 매각 가격이 있다고 시장에서 파는 것은 아닙니다.",
+  "Markets that sell this item": "이 아이템을 판매하는 시장",
+  "Markets that buy this item": "이 아이템을 매입하는 시장"
 }

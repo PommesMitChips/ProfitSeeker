@@ -1,6 +1,6 @@
 import { Raw, obj } from "../src/domain/model";
 import { GameAPI } from "../src/game/api";
-import {BUY, nameFactor} from "../src/mechanics/pricing";
+import { BUY, nameFactor } from "../src/mechanics/pricing";
 export function createFixture() {
   const items: Record<string, Raw> = {};
   const item = (name: string, kind = "material", extra: Raw = {}) =>
@@ -57,13 +57,37 @@ export function createFixture() {
   }
   const locations: Raw = {};
   // Regression example: prices supplied by the user, native unmodified threshold.
-  const yuhe = item("Lesser Yuhe Herb", "material", {valueTier:33.5/(BUY.material*1.4*nameFactor("Lesser Yuhe Herb"))});
-  const grass = item("Lesser Spirit Grass", "material", {valueTier:16.5/(BUY.material*1.4*nameFactor("Lesser Spirit Grass"))});
-  const insight = item("Insight Pill+ (I)", "pill", {rarity:"empowered",valueTier:1.5});
+  const yuhe = item("Lesser Yuhe Herb", "material", {
+    valueTier: 33.5 / (BUY.material * 1.4 * nameFactor("Lesser Yuhe Herb")),
+  });
+  const grass = item("Lesser Spirit Grass", "material", {
+    valueTier: 16.5 / (BUY.material * 1.4 * nameFactor("Lesser Spirit Grass")),
+  });
+  const insight = item("Insight Pill+ (I)", "pill", {
+    rarity: "empowered",
+    valueTier: 1.5,
+  });
   const normalInsight = item("Insight Pill (I)", "pill");
-  const insightRecipe = {...item("Insight Pill (I) Recipe","recipe"),baseItem:{...normalInsight,stacks:3},perfectItem:{...insight,stacks:3},ingredients:[{item:yuhe,quantity:2},{item:grass,quantity:2}],realmProgress:"Middle",difficulty:"medium"};
-  items[String(insightRecipe.name)]=insightRecipe;
-  known.push({name:insightRecipe.name, basicCount:4,perfectCount:2,sublimeCount:1,perfectBestResult:2037,perfectBestCompletion:2037});
+  const insightRecipe = {
+    ...item("Insight Pill (I) Recipe", "recipe"),
+    baseItem: { ...normalInsight, stacks: 3 },
+    perfectItem: { ...insight, stacks: 3 },
+    ingredients: [
+      { item: yuhe, quantity: 2 },
+      { item: grass, quantity: 2 },
+    ],
+    realmProgress: "Middle",
+    difficulty: "medium",
+  };
+  items[String(insightRecipe.name)] = insightRecipe;
+  known.push({
+    name: insightRecipe.name,
+    basicCount: 4,
+    perfectCount: 2,
+    sublimeCount: 1,
+    perfectBestResult: 2037,
+    perfectBestCompletion: 2037,
+  });
   for (const [name, multiplier, group] of [
     ["Valley market", 1.4, "Valley"],
     ["Mountain market", 2, "Mountain"],
@@ -82,14 +106,20 @@ export function createFixture() {
           kind: "market",
           costMultiplier: multiplier,
           itemPool: {
-            bodyForging: [
-              { name: herb.name, stacks: 90 },
-              { name: ore.name, stacks: 3 },
-              { name: dust.name, stacks: 30 },
-              { name: cloth.name, stacks: 40 },
-              { name: yuhe.name, stacks: 40 },
-              { name: grass.name, stacks: 40 },
-            ],
+            bodyForging:
+              name === "Mountain market"
+                ? [
+                    { name: ore.name, stacks: 3 },
+                    { name: dust.name, stacks: 30 },
+                  ]
+                : [
+                    { name: herb.name, stacks: 90 },
+                    { name: ore.name, stacks: 3 },
+                    { name: dust.name, stacks: 30 },
+                    { name: cloth.name, stacks: 40 },
+                    { name: yuhe.name, stacks: 40 },
+                    { name: grass.name, stacks: 40 },
+                  ],
           },
           reputationPool: {},
           refreshMonths: 1,

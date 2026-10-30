@@ -210,5 +210,11 @@
   "Previous location": "前の場所",
   "Next location": "次の場所",
   "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.": "1個あたりの費用：{low}–{high}。返却材料は変動します。利益と利益率は全額の前払い費用で計算します。",
-  "Refunds: up to {count} ingredient units, chosen at random.": "返却：ランダムに選ばれた材料が最大 {count} 個。"
+  "Refunds: up to {count} ingredient units, chosen at random.": "返却：ランダムに選ばれた材料が最大 {count} 個。",
+  "Buy price": "購入価格",
+  "No confirmed purchase stock for this item.": "このアイテムの購入在庫は確認されていません。",
+  "Not stocked": "取扱いなし",
+  "Purchase listings only. Sale quotes do not imply stock.": "購入価格は市場の商品一覧に基づきます。売却価格があっても購入できるとは限りません。",
+  "Markets that sell this item": "このアイテムを購入できる市場",
+  "Markets that buy this item": "このアイテムを売却できる市場"
 }

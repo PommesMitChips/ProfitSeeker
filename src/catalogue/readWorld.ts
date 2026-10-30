@@ -241,11 +241,23 @@ export function readWorld(
           : "possible";
   };
   const buildingStatus = new Map<string, Availability>();
+  const indexedMarkets = new Set<string>();
+  const labelCounts = new Map<string, number>();
+  for (const [id, raw] of Object.entries(locations)) {
+    const location = obj(raw),
+      label = translate(location.displayName ?? location.name ?? id);
+    labelCounts.set(label, (labelCounts.get(label) ?? 0) + 1);
+  }
   for (const [locationId, locationValue] of Object.entries(locations)) {
     const location = obj(locationValue),
-      locationName = translate(
+      displayName = translate(
         location.displayName ?? location.name ?? locationId,
-      );
+      ),
+      canonicalName = translate(locationId),
+      locationName =
+        (labelCounts.get(displayName) ?? 0) > 1 && canonicalName !== displayName
+          ? `${displayName} · ${canonicalName}`
+          : displayName;
     for (const building of list(location.buildings)) {
       const status = availability(locationId, building.disabled);
       buildingStatus.set(`${locationId}:${str(building.kind)}`, status);
@@ -267,6 +279,9 @@ export function readWorld(
           }
       }
       if (building.kind !== "market") continue;
+      // The native market view uses the first market building for this location.
+      if (indexedMarkets.has(locationId)) continue;
+      indexedMarkets.add(locationId);
       if (building.tokenCurrency) {
         for (const entries of Object.values(
           obj(obj(building.tokenCurrency).tokenStock),

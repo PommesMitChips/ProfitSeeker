@@ -22,6 +22,12 @@ import {
   resolveItemOutput,
 } from "../mechanics/results";
 import { salePrice } from "../mechanics/pricing";
+import {
+  purchaseListings,
+  itemPurchaseListings,
+  purchaseMetric,
+  uniqueMarkets,
+} from "../query/marketCatalogue";
 /** Upper bound on replacement-cost savings. Refunds never fund initial inputs.
  * Only directly purchased ingredient units have an attributable cash basis. */
 export function refundCredit(
@@ -32,7 +38,7 @@ export function refundCredit(
 ): number {
   // Nested crafting consumes purchased materials too. Until each ingredient has
   // its own cost provenance, do not attribute those purchases to outer refunds.
-  if (steps.filter(s => s.kind === "craft").length > 1) return 0;
+  if (steps.filter((s) => s.kind === "craft").length > 1) return 0;
   const units: { quantity: number; price: number }[] = [];
   for (const ingredient of recipe.ingredients) {
     let remaining = ingredient.quantity * batches;
@@ -176,7 +182,7 @@ export class Planner {
   }
   private purchase(name: string, count: number, state: Ledger): Ledger[] {
     if (!this.options.buy) return [];
-    const sources = (this.world.sources.get(name) ?? []).filter(
+    const sources = purchaseListings(this.world, name).filter(
       (s) =>
         s.kind === "buy" &&
         s.acquires !== "knowledge" &&
@@ -430,7 +436,7 @@ export function evaluateRow(
       : num((item.raw.harmonyAugment as Raw | undefined)?.quality);
   const alternatives: Alternative[] = [];
   for (const route of routes)
-    for (const market of world.markets) {
+    for (const market of uniqueMarkets(world.markets)) {
       if (market.availability !== "available" || !world.pricingVerified)
         continue;
       const price = salePrice(item, market, route.quality);
@@ -439,7 +445,12 @@ export function evaluateRow(
         { profit, roi } = finance(cost, price.value);
       alternatives.push({
         route,
-        quote: { market: market.name, availability: "available", price },
+        quote: {
+          market: market.name,
+          marketId: market.id,
+          availability: "available",
+          price,
+        },
         cost,
         sale: price.value,
         profit,
@@ -458,8 +469,10 @@ export function evaluateRow(
     routes[0]?.quality ??
     scenarios[0]?.quality ??
     fallbackQuality;
-  const quotes = world.markets.map((m) => ({
+  const purchases = itemPurchaseListings(world, item, quoteQuality);
+  const quotes = uniqueMarkets(world.markets).map((m) => ({
     market: m.name,
+    marketId: m.id,
     availability: m.availability,
     reason: m.reason,
     price: unsupported
@@ -495,6 +508,8 @@ export function evaluateRow(
   if (planner.limited) unavailable = missing(why!);
   return {
     item,
+    buy: purchaseMetric(purchases),
+    purchases,
     cost: planner.limited
       ? unavailable
       : routes[0]

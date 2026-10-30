@@ -210,5 +210,11 @@
   "Previous location": "Предыдущее место",
   "Next location": "Следующее место",
   "Cost range: {low}–{high} per item. Refunds vary; profit and ROI use the full upfront cost.": "Стоимость: {low}–{high} за предмет. Возврат случаен; прибыль и рентабельность рассчитаны по полной стоимости.",
-  "Refunds: up to {count} ingredient units, chosen at random.": "Возврат: до {count} ед. случайных ингредиентов."
+  "Refunds: up to {count} ingredient units, chosen at random.": "Возврат: до {count} ед. случайных ингредиентов.",
+  "Buy price": "Цена покупки",
+  "No confirmed purchase stock for this item.": "Нет подтверждённого запаса этого предмета для покупки.",
+  "Not stocked": "Не продаётся",
+  "Purchase listings only. Sale quotes do not imply stock.": "Покупка — только по ассортименту рынка. Цена продажи не означает наличие в продаже.",
+  "Markets that sell this item": "Рынки, где можно купить предмет",
+  "Markets that buy this item": "Рынки, где можно продать предмет"
 }

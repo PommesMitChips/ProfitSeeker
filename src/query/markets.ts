@@ -1,6 +1,9 @@
 import { World } from "../domain/model";
+import { uniqueMarkets } from "./marketCatalogue";
 export const knownMarkets = (world: World) =>
-  world.markets.filter((m) => m.known ?? m.availability === "available");
+  uniqueMarkets(world.markets).filter(
+    (m) => m.known ?? m.availability === "available",
+  );
 const scoped = new WeakMap<World, Map<string, World>>();
 export function selectMarkets(world: World, ids?: string[]): World {
   const key = ids === undefined ? "all" : JSON.stringify([...ids].sort());

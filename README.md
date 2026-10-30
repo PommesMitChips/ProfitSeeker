@@ -4,7 +4,7 @@ An in-game crafting and trading calculator for **Ascend From Nine Mountains**.
 Compare ways to earn spirit stones, find market opportunities, and follow a
 caravan plan from a compact overlay.
 
-**Current release:** `0.3.0-alpha.5` · **Target game version:** `0.7.18-97c093b`
+**Current release:** `0.3.0-alpha.6` · **Target game version:** `0.7.18-97c093b`
 
 [Download a release](https://github.com/PommesMitChips/ProfitSeeker/releases) ·
 [Report an issue](https://github.com/PommesMitChips/ProfitSeeker/issues) ·
@@ -30,7 +30,21 @@ ZIP to uninstall. The mod uses its own `afnm-profitseeker` save-data namespace.
 
 ## Crafting
 
-The table has five sortable columns: **Item, Cost, Sale price, Profit and ROI**.
+The table has six sortable columns: **Item, Cost, Buy price, Sale price, Profit and ROI**.
+
+**Cost** is the crafting/acquisition calculation. **Buy price** is the cheapest
+confirmed market offer for the item at the row's star/enchantment variant.
+It stays unavailable when no selected market stocks that item. Hover it to see
+the stocking markets, purchase prices and quantities.
+
+Buy offers come from a per-market catalogue built from registered stock pools
+and observed market inventory. Unknown or empty stock never becomes a confirmed
+purchase price. Ingredient sourcing and Arbitrage use the same catalogue.
+
+A market can accept an owned item for sale without stocking it for purchase.
+Sale details therefore show **Buy price / Stock / Sale price** separately and
+mark items outside that market's purchase listings as **Not stocked**. Crafting
+return details list ingredient sources once per route above the sale destinations.
 
 - Search across names, descriptions, ingredients and places. Each word is a
   separate keyword; matches are ranked by relevance.

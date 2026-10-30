@@ -124,7 +124,7 @@ export interface Filters {
   craftNow: boolean;
   craftable: boolean;
 }
-export type SortKey = "item" | "cost" | "sale" | "profit" | "roi";
+export type SortKey = "item" | "cost" | "buy" | "sale" | "profit" | "roi";
 export interface Preferences {
   filters: Filters;
   options: Options;
@@ -216,6 +216,8 @@ export interface Alternative {
 }
 export interface Row {
   item: Item;
+  buy: Metric;
+  purchases?: Source[];
   cost: Metric;
   sale: Metric;
   profit: Metric;

@@ -43,6 +43,7 @@ export const buy = (
 ): Source => ({
   id,
   kind: "buy",
+  marketId: "market",
   item: name,
   label: id,
   location: id,
