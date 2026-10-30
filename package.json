@@ -1,0 +1,35 @@
+{
+  "name": "afnm-profitseeker",
+  "version": "0.3.0-alpha.4",
+  "private": true,
+  "license": "MIT",
+  "description": "Compare spirit-stone acquisition, crafting and market returns",
+  "author": { "name": "PommesMitChips" },
+  "repository": { "type": "git", "url": "https://github.com/PommesMitChips/ProfitSeeker.git" },
+  "homepage": "https://github.com/PommesMitChips/ProfitSeeker#readme",
+  "bugs": { "url": "https://github.com/PommesMitChips/ProfitSeeker/issues" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "jest --runInBand",
+    "build": "npm run typecheck && webpack --mode production && node scripts/package.cjs",
+    "harness:build": "webpack --config webpack.harness.cjs --mode development",
+    "harness:serve": "node scripts/serve.cjs"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "webpack": "5.105.3",
+    "webpack-cli": "6.0.1",
+    "ts-loader": "9.5.4",
+    "@types/react": "19.3.0",
+    "@types/node": "25.0.1",
+    "@types/jest": "30.0.0",
+    "jest": "30.2.0",
+    "ts-jest": "29.4.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "@types/react-dom": "19.2.3",
+    "@mui/material": "7.3.8",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1"
+  }
+}

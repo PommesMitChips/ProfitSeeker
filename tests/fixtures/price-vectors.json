@@ -1,0 +1,1103 @@
+{
+  "gameVersion": "0.7.18-97c093b",
+  "description": "Numeric reference results for synthetic inputs; no game source or assets.",
+  "multiplier": 1.2,
+  "modifier": 1.3,
+  "charisma": 0.75,
+  "nameFactors": {
+    "Ore": 1.0314074446753152,
+    "Blood Weapon Stone": 0.9202999051241902,
+    "Cloud Blossom Jewel": 1.0317210887399786,
+    "Neutral Neutral Pill": 0.974413385818343
+  },
+  "vectors": [
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 151
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 174
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 219
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 332
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3012
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3463
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 4367
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 6626
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 25602
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 29442
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 37123
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 56325
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3012
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3463
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 4367
+    },
+    {
+      "item": {
+        "name": "Ore",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 6626
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 135
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 155
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 195
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 296
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 2687
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3090
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3896
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 5912
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 22844
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 26270
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 33124
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 50257
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 2687
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3090
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3896
+    },
+    {
+      "item": {
+        "name": "Blood Weapon Stone",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 5912
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 151
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 174
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 219
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 332
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3012
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3464
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 4368
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 6628
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 25610
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 29451
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 37134
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 56342
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3012
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3464
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 4368
+    },
+    {
+      "item": {
+        "name": "Cloud Blossom Jewel",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 6628
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 143
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 164
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 207
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "mundane",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 313
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 2845
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3272
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 4126
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "bodyForging",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 6260
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 24187
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 27815
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 35072
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "coreFormation",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 53212
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 0
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 2845
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 1
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 3272
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 3
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 4126
+    },
+    {
+      "item": {
+        "name": "Neutral Neutral Pill",
+        "kind": "talisman",
+        "realm": "any",
+        "rarity": "empowered",
+        "valueTier": 2,
+        "harmonyAugment": {
+          "type": "forge",
+          "quality": 8
+        },
+        "enchantment": {
+          "rarity": "resplendent"
+        }
+      },
+      "expected": 6260
+    }
+  ]
+}
