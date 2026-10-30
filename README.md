@@ -12,7 +12,7 @@ caravan plan from a compact overlay.
 
 ## Install
 
-1. Download **Profit Seeker.zip** from a release. GitHub's automatic source-code
+1. Download **Profit.Seeker.zip** from a release. GitHub's automatic source-code
    archives are for developers, not for installation.
 2. Place the ZIP in the game's `mods` folder **without extracting it**. On a
    typical Windows Steam installation this is:
