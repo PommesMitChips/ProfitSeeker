@@ -4,7 +4,7 @@ An in-game crafting and trading calculator for **Ascend From Nine Mountains**.
 Compare ways to earn spirit stones, find market opportunities, and follow a
 caravan plan from a compact overlay.
 
-**Current release:** `0.3.0-alpha.7` · **Target game version:** `0.7.18-97c093b`
+**Current release:** `0.3.0-alpha.8` · **Target game version:** `0.7.18-97c093b`
 
 [Download a release](https://github.com/PommesMitChips/ProfitSeeker/releases) ·
 [Report an issue](https://github.com/PommesMitChips/ProfitSeeker/issues) ·
@@ -154,9 +154,11 @@ continues event-driven transaction tracking; untracked pickups do not trigger
 replanning. Recipe-rule and access-condition flags are tracked separately from
 unrelated game flags. Visible table work yields between short batches.
 
-The separate language watcher checks the setting every 100 ms to support the
-game's same-window settings changes. Unchanged checks enqueue no React update
-and do not refresh economic data.
+On the verified game build, language changes subscribe directly to the game's
+React language context, including completion of translation loading. No language
+polling runs on that path. The internal hook is compatibility-checked before use;
+an unsupported build falls back to the storage watcher (100 ms, no React updates
+when unchanged). The adapter never writes game settings.
 
 Run `node scripts/benchmark-refresh.cjs` to compare full-rebuild adapter work
 against incremental refreshes using the development fixture. It reports native

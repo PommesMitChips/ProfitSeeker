@@ -15,7 +15,7 @@ module.exports = {
         test: /\.tsx?$/,
         use: {
           loader: "ts-loader",
-          options: { compilerOptions: { noEmit: false } },
+          options: { compilerOptions: { noEmit: false, module: "ESNext" } },
         },
         exclude: /node_modules/,
       },

@@ -1,5 +1,6 @@
-import React, { useState, useSyncExternalStore } from "react";
-import { I18nProvider, languageOptions } from "../src/i18n";
+import React, { createContext, useContext, useState, useSyncExternalStore } from "react";
+import { languageOptions } from "../src/i18n";
+import { NativeI18nProvider, GameLanguageState } from "../src/i18n/native";
 import { createRoot } from "react-dom/client";
 import {
   ThemeProvider,
@@ -40,14 +41,22 @@ function FixtureIcon({ item, size }: { item: Raw; size: string }) {
   );
 }
 const fixture = createFixture();
+const FixtureLanguageContext = createContext({
+  state: { language: "en", translationVersion: 0, isLoading: false } as GameLanguageState,
+  setLanguage: (_language: string) => {},
+});
+const useFixtureGameLanguage = () => useContext(FixtureLanguageContext).state;
+function FixtureI18n({ children }: { children: React.ReactNode }) {
+  const [state, setState] = useState<GameLanguageState>({ language: "en", translationVersion: 0, isLoading: false });
+  return <FixtureLanguageContext.Provider value={{ state, setLanguage: (language) => {
+    // No localStorage event or mirror: exercise the native context subscription.
+    setState((old) => ({ language, translationVersion: old.translationVersion + 1, isLoading: false }));
+  } }}>
+    <NativeI18nProvider api={fixture.api} useGameLanguage={useFixtureGameLanguage}>{children}</NativeI18nProvider>
+  </FixtureLanguageContext.Provider>;
+}
 function FixtureLanguage() {
-  const [language, setLanguage] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("GameLanguage") ?? '"en"');
-    } catch {
-      return "en";
-    }
-  });
+  const { state: { language }, setLanguage } = useContext(FixtureLanguageContext);
   return (
     <label>
       Fixture game language{" "}
@@ -56,9 +65,6 @@ function FixtureLanguage() {
         value={language}
         onChange={(e) => {
           setLanguage(e.target.value);
-          localStorage.setItem("GameLanguage", JSON.stringify(e.target.value));
-          // Like the game's same-window write, this does not emit `storage`.
-          // The provider must detect it without relying on a synthetic event.
         }}
       >
         {languageOptions.map(([code, name]) => (
@@ -93,7 +99,7 @@ const theme = createTheme({
 createRoot(document.getElementById("root")!).render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <I18nProvider api={fixture.api}>
+    <FixtureI18n>
       <Box sx={{ maxWidth: 1520, mx: "auto", p: 1 }}>
         <Alert
           severity="info"
@@ -130,6 +136,6 @@ createRoot(document.getElementById("root")!).render(
         <ProfitSeekerPanel api={fixture.api} screenAPI={screenAPI} />
         <ProfitSeekerLauncher api={fixture.api} screenAPI={screenAPI} />
       </Box>
-    </I18nProvider>
+    </FixtureI18n>
   </ThemeProvider>,
 );

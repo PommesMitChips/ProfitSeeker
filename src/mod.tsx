@@ -1,10 +1,10 @@
 import React from "react";
 import { ProfitSeekerLauncher } from "./ui/Launcher";
 import { TARGET_VERSION } from "./catalogue/readWorld";
-import {I18nProvider} from './i18n';
+import {GameI18nProvider} from './i18n/native';
 const metadata = {
   name: "Profit Seeker",
-  version: "0.3.0-alpha.7",
+  version: "0.3.0-alpha.8",
   author: { name: "PommesMitChips" },
   description: "Compare spirit-stone acquisition, crafting and market returns.",
   gameVersion: TARGET_VERSION,
@@ -12,7 +12,7 @@ const metadata = {
 const api = window.modAPI;
 if (api?.injectUI && !window.__profitSeekerRegistered) {
   api.injectUI("player-ui", (screenAPI, insert) => {
-    insert("", <I18nProvider api={api}><ProfitSeekerLauncher api={api} screenAPI={screenAPI} /></I18nProvider>);
+    insert("", <GameI18nProvider api={api}><ProfitSeekerLauncher api={api} screenAPI={screenAPI} /></GameI18nProvider>);
   });
   window.__profitSeekerRegistered = true;
 } else if (!api?.injectUI) {

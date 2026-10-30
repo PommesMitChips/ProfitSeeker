@@ -167,7 +167,7 @@ export function createI18n(
 }
 export type I18n = ReturnType<typeof createI18n>;
 export const english = createI18n("en");
-const Context = createContext<I18n>(english);
+export const Context = createContext<I18n>(english);
 export const useI18n = () => useContext(Context);
 export function I18nProvider({
   api,
