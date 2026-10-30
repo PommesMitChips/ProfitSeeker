@@ -12,7 +12,7 @@ import { MOD_ID, readPreferences } from "./preferences";
 import { obj } from "../domain/model";
 import { selectMarkets } from "../query/markets";
 import { cachedArbitrageRows } from "../planner/arbitrage";
-import { travelContext } from "../planner/travel";
+import { createTravelReader } from "../planner/travel";
 import { CaravanPlan, planCaravan } from "../planner/caravan";
 import {
   caravanStops,
@@ -59,7 +59,8 @@ export function useCaravan(
     [error, setError] = useState("");
   const latest = useRef(settings);
   latest.current = settings;
-  const lastRun = useRef("");
+  const lastRun = useRef<object | undefined>(undefined);
+  const readTravel = useMemo(() => createTravelReader(), [api]);
   const ids = readPreferences(data.state).marketIds,
     marketKey = JSON.stringify(ids);
   const world = useMemo(
@@ -67,34 +68,32 @@ export function useCaravan(
     [data.world, marketKey],
   );
   const rows = useMemo(
-    () => (world ? cachedArbitrageRows(world) : []),
-    [world],
+    () => (world && settings.plan ? cachedArbitrageRows(world) : []),
+    [world, !!settings.plan],
+  );
+  const cargoKey = useMemo(
+    () => caravanCargoKey(settings.plan, world),
+    [settings.plan?.tracked, world?.inventory],
   );
   const travel = useMemo(
     () =>
-      world ? travelContext(api, data.state, data.flags, world) : undefined,
-    [api, world],
+      world && settings.plan
+        ? readTravel(api, data.state, data.flags, world)
+        : undefined,
+    [
+      api,
+      world?.markets,
+      world?.knownLocations,
+      data.state.player,
+      data.state.breakthrough,
+      obj(data.state.inventory).money,
+      obj(data.state.location).current,
+      !!settings.plan,
+    ],
   );
+  // Stable dependency identities replace serializing every offer/route each render.
   const key = useMemo(
-    () =>
-      JSON.stringify([
-        data.identity,
-        marketKey,
-        settings.maxTrades,
-        settings.autoUpdate,
-        travel,
-        rows.map((r) => [
-          r.item.key,
-          r.offers.map((s) => [s.id, s.quantity, s.cost, s.availability]),
-          r.alternatives.map((a) => [
-            a.route.id,
-            a.quote.marketId,
-            a.cost,
-            a.sale,
-          ]),
-        ]),
-        world?.inventory.map((i) => [i.key, i.quantity]),
-      ]),
+    () => ({}),
     [
       data.identity,
       marketKey,
@@ -102,7 +101,7 @@ export function useCaravan(
       settings.autoUpdate,
       travel,
       rows,
-      world,
+      cargoKey,
     ],
   );
   const save = (patch: Partial<CaravanSettings>) => {
@@ -113,20 +112,21 @@ export function useCaravan(
     });
   };
   const generate = () => {
-    if (!world || !travel || data.refreshing) return;
+    if (!world || data.refreshing) return;
+    const currentTravel = readTravel(api, data.state, data.flags, world);
     setBusy(true);
     setError("");
     try {
       const plan = planCaravan(
         world,
-        rows,
-        travel,
+        cachedArbitrageRows(world),
+        currentTravel,
         latest.current.maxTrades,
         latest.current.plan,
       );
       lastRun.current = key;
       const stops = caravanStops(plan),
-        current = stops.findIndex((s) => s.location === travel.current);
+        current = stops.findIndex((s) => s.location === currentTravel.current);
       save({ plan, cursor: Math.max(0, current) });
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -159,5 +159,17 @@ export function useCaravan(
   };
 }
 export type CaravanController = ReturnType<typeof useCaravan>;
+export function caravanCargoKey(
+  plan: CaravanPlan | undefined,
+  world: ProfitData["world"],
+): string {
+  if (!plan || !world) return "";
+  const tracked = new Set(plan.tracked.map((i) => i.key)),
+    counts = new Map<string, number>();
+  for (const i of world.inventory)
+    if (tracked.has(i.key))
+      counts.set(i.key, (counts.get(i.key) ?? 0) + i.quantity);
+  return JSON.stringify([...counts].sort(([a], [b]) => a.localeCompare(b)));
+}
 export const CaravanContext = createContext<CaravanController | null>(null);
 export const useCaravanController = () => useContext(CaravanContext);

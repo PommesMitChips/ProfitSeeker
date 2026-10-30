@@ -27,11 +27,11 @@ export function ProfitSeekerLauncher({
     { t } = i18n;
 
   const [open, setOpen] = useState(false);
-  const snapshot = screenAPI.useSelector((s) => s);
+  const caravanState = screenAPI.useSelector((s) => obj(obj(obj(s.mod).data)[MOD_ID]).caravan);
   const autoUpdate =
-    obj(obj(obj(obj(snapshot.mod).data)[MOD_ID]).caravan).autoUpdate === true;
-  const hasPlan = !!obj(obj(obj(obj(snapshot.mod).data)[MOD_ID]).caravan).plan;
-  const data = useProfitWorld(api, screenAPI, open || autoUpdate || hasPlan);
+    obj(caravanState).autoUpdate === true;
+  const hasPlan = !!obj(caravanState).plan;
+  const data = useProfitWorld(api, screenAPI, open || hasPlan);
   const caravan = useCaravan(api, screenAPI, data);
   const [position, setPosition] = useState<Point | null>(() => {
     try {

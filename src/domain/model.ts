@@ -151,6 +151,24 @@ export const defaults = (): Preferences => ({
   reservations: {},
 });
 export interface World {
+  knownLocations?: ReadonlySet<string>;
+  revisions?: {
+    all: number;
+    items: ReadonlyMap<string, number>;
+    trade: number;
+  };
+  memo?: {
+    craftability: Map<string, { stamp: string; value: boolean }>;
+    arbitrage: Map<
+      string,
+      {
+        revision: number;
+        all: number;
+        stamps: ReadonlyMap<string, number>;
+        rows: Row[];
+      }
+    >;
+  };
   items: Map<string, Item>;
   recipes: Recipe[];
   recipesByOutput: Map<string, Recipe[]>;

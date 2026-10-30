@@ -24,6 +24,14 @@ import {
 } from "../mechanics/pricing";
 
 export const TARGET_VERSION = "0.7.18-97c093b";
+export interface WorldReadPlan {
+  inventory: boolean;
+  recipes: boolean;
+  records: Set<string>;
+  markets: boolean | Set<string>;
+  prices?: boolean;
+  sources: boolean;
+}
 export function variantKey(raw: Raw): string {
   const augment = obj(raw.harmonyAugment),
     enchantment = obj(raw.enchantment);
@@ -40,13 +48,50 @@ export function readWorld(
   api: GameAPI,
   state: Raw,
   flags: Record<string, number>,
-  reader: RecipeReader,
+  reader: RecipeReader | undefined,
   revision: number,
+  previous?: World,
+  update?: WorldReadPlan,
 ): World {
-  const items = new Map<string, Item>(),
-    recipes: Recipe[] = [],
-    sources = new Map<string, Source[]>(),
-    markets: Market[] = [],
+  const plan = update ?? {
+    inventory: true,
+    recipes: true,
+    records: new Set<string>(),
+    markets: true,
+    sources: true,
+  };
+  const recipeWork = plan.recipes || plan.records.size > 0;
+  const replaceSource = (s: Source) =>
+    s.kind === "recipe"
+      ? plan.recipes ||
+        [...plan.records].some((name) => s.id.startsWith(`recipe:${name}:`))
+      : s.kind === "buy"
+        ? plan.markets === true ||
+          (plan.markets instanceof Set &&
+            !!s.marketId &&
+            plan.markets.has(s.marketId))
+        : plan.sources;
+  let items = previous?.items ?? new Map<string, Item>();
+  const recipes: Recipe[] = [],
+    sources = previous
+      ? recipeWork || plan.markets || plan.sources
+        ? new Map(
+            [...previous.sources].map(([name, entries]) => [
+              name,
+              entries.filter((s) => !replaceSource(s)),
+            ]),
+          )
+        : previous.sources
+      : new Map<string, Source[]>(),
+    markets: Market[] = previous
+      ? previous.markets.filter(
+          (m) =>
+            !(
+              plan.markets === true ||
+              (plan.markets instanceof Set && plan.markets.has(m.id))
+            ),
+        )
+      : [],
     issues: string[] = [];
   const data = api.gameData,
     inventoryState = obj(state.inventory),
@@ -108,104 +153,154 @@ export function readWorld(
       icon: str(raw.icon),
       raw,
     };
+    if (previous && items === previous.items) items = new Map(items);
     items.set(name, item);
     return item;
   }
-  for (const raw of Object.values(obj(data.items))) addItem(obj(raw));
-  for (const definition of Object.values(obj(data.researchableMap)).flatMap(
-    (v) => list(v),
-  ))
-    addItem(definition);
-  const recipeDefs = [...items.values()].filter((i) => i.kind === "recipe");
-  for (const item of recipeDefs) {
-    let raw = item.raw,
-      perfection: number | undefined,
-      completion: number | undefined,
-      error: string | undefined;
-    try {
-      const effective = reader.read(raw, flags);
-      raw = effective.recipe;
-      perfection = num(effective.stats.perfection) || undefined;
-      completion = num(effective.stats.completion) || undefined;
-    } catch (e) {
-      error = e instanceof Error ? e.message : "Effective recipe unavailable";
+  if (!previous) {
+    for (const raw of Object.values(obj(data.items))) addItem(obj(raw));
+    for (const definition of Object.values(obj(data.researchableMap)).flatMap(
+      (v) => list(v),
+    ))
+      addItem(definition);
+  }
+  if (previous && !plan.recipes) {
+    for (const old of previous.recipes) {
+      if (!plan.records.has(old.name)) {
+        recipes.push(old);
+        continue;
+      }
+      let cap: number | undefined;
+      try {
+        cap = api.utils.getCraftSkillCap?.(
+          str(old.raw.realm),
+          str(old.raw.realmProgress),
+        );
+      } catch {}
+      const next = {
+        ...old,
+        known: records.has(old.name),
+        record: records.get(old.name) ?? {},
+        raw: {
+          ...old.raw,
+          _skillBypass:
+            cap !== undefined && num(obj(player.socialStats).craftskill) >= cap,
+        },
+      };
+      recipes.push(next);
+      for (const [tier, output] of Object.entries(next.outputs))
+        source({
+          id: `recipe:${next.name}:${tier}`,
+          item: output.name,
+          label: `${items.get(next.name)?.label ?? next.name} · ${tier === "basic" ? "Normal" : tier === "perfect" ? "Perfect" : "Sublime"}`,
+          location: "Crafting",
+          kind: "recipe",
+          availability: next.known ? "available" : "locked",
+          repeatable: true,
+          quantity: output.quantity,
+          reason: next.known ? undefined : "Recipe not known",
+        });
     }
-    const outputs: Recipe["outputs"] = {};
-    for (const tier of ["basic", "perfect", "sublime"] as Tier[]) {
-      const desc = obj(raw[tier === "basic" ? "baseItem" : `${tier}Item`]);
-      const output = addItem(desc);
-      if (output)
-        outputs[tier] = {
-          name: output.name,
-          quantity: num(desc.stacks, 1),
-          raw: output.raw,
-        };
+  } else {
+    const recipeDefs = [...items.values()].filter((i) => i.kind === "recipe");
+    for (const item of recipeDefs) {
+      let raw = item.raw,
+        perfection: number | undefined,
+        completion: number | undefined,
+        error: string | undefined;
+      try {
+        if (!reader) throw new Error("Effective recipe access is unavailable.");
+        const effective = reader.read(raw, flags);
+        raw = effective.recipe;
+        perfection = num(effective.stats.perfection) || undefined;
+        completion = num(effective.stats.completion) || undefined;
+      } catch (e) {
+        error = e instanceof Error ? e.message : "Effective recipe unavailable";
+      }
+      const outputs: Recipe["outputs"] = {};
+      for (const tier of ["basic", "perfect", "sublime"] as Tier[]) {
+        const desc = obj(raw[tier === "basic" ? "baseItem" : `${tier}Item`]);
+        const output = addItem(desc);
+        if (output)
+          outputs[tier] = {
+            name: output.name,
+            quantity: num(desc.stacks, 1),
+            raw: output.raw,
+          };
+      }
+      const ingredients: Ingredient[] = list(raw.ingredients)
+        .map((i) => {
+          const desc = obj(i.item);
+          addItem(desc);
+          return { name: str(desc.name), quantity: num(i.quantity) };
+        })
+        .filter((i) => i.name && i.quantity > 0);
+      let skillBypass = false;
+      try {
+        const cap = api.utils.getCraftSkillCap?.(
+          str(raw.realm),
+          str(raw.realmProgress),
+        );
+        skillBypass =
+          cap !== undefined && num(obj(player.socialStats).craftskill) >= cap;
+      } catch {
+        /* unknown is not a skill bypass */
+      }
+      const recipe: Recipe = {
+        name: item.name,
+        raw: { ...raw, _skillBypass: skillBypass },
+        ingredients,
+        outputs,
+        known: records.has(item.name),
+        record: records.get(item.name) ?? {},
+        perfection,
+        completion,
+        error,
+      };
+      recipes.push(recipe);
+      for (const [tier, output] of Object.entries(outputs))
+        source({
+          id: `recipe:${item.name}:${tier}`,
+          item: output.name,
+          label: `${item.label} · ${tier === "basic" ? "Normal" : tier === "perfect" ? "Perfect" : "Sublime"}`,
+          location: "Crafting",
+          kind: "recipe",
+          availability: recipe.known ? "available" : "locked",
+          repeatable: true,
+          quantity: output.quantity,
+          reason: recipe.known ? undefined : "Recipe not known",
+        });
     }
-    const ingredients: Ingredient[] = list(raw.ingredients)
-      .map((i) => {
-        const desc = obj(i.item);
-        addItem(desc);
-        return { name: str(desc.name), quantity: num(i.quantity) };
-      })
-      .filter((i) => i.name && i.quantity > 0);
-    let skillBypass = false;
-    try {
-      const cap = api.utils.getCraftSkillCap?.(
-        str(raw.realm),
-        str(raw.realmProgress),
-      );
-      skillBypass =
-        cap !== undefined && num(obj(player.socialStats).craftskill) >= cap;
-    } catch {
-      /* unknown is not a skill bypass */
-    }
-    const recipe: Recipe = {
-      name: item.name,
-      raw: { ...raw, _skillBypass: skillBypass },
-      ingredients,
-      outputs,
-      known: records.has(item.name),
-      record: records.get(item.name) ?? {},
-      perfection,
-      completion,
-      error,
-    };
-    recipes.push(recipe);
-    for (const [tier, output] of Object.entries(outputs))
-      source({
-        id: `recipe:${item.name}:${tier}`,
-        item: output.name,
-        label: `${item.label} · ${tier === "basic" ? "Normal" : tier === "perfect" ? "Perfect" : "Sublime"}`,
-        location: "Crafting",
-        kind: "recipe",
-        availability: recipe.known ? "available" : "locked",
-        repeatable: true,
-        quantity: output.quantity,
-        reason: recipe.known ? undefined : "Recipe not known",
-      });
   }
   const inventory: InventoryEntry[] = [];
-  for (const place of ["inventory", "storage"] as const) {
-    for (const entry of list(
-      inventoryState[place === "inventory" ? "items" : "storage"],
-    )) {
-      const item = addItem(entry);
-      if (!item) continue;
-      inventory.push({
-        key: variantKey(entry),
-        name: item.name,
-        label: item.label,
-        quantity: Math.max(0, num(entry.stacks)),
-        place,
-        raw: entry,
-      });
+  if (previous && !plan.inventory) inventory.push(...previous.inventory);
+  else {
+    for (const place of ["inventory", "storage"] as const) {
+      for (const entry of list(
+        inventoryState[place === "inventory" ? "items" : "storage"],
+      )) {
+        const item = addItem(entry);
+        if (!item) continue;
+        inventory.push({
+          key: variantKey(entry),
+          name: item.name,
+          label: item.label,
+          quantity: Math.max(0, num(entry.stacks)),
+          place,
+          raw: entry,
+        });
+      }
     }
   }
-  const charisma = effectiveCharisma(api, player, obj(state.breakthrough));
+  const charisma =
+    previous && (!plan.markets || plan.prices === false)
+      ? previous.charisma
+      : effectiveCharisma(api, player, obj(state.breakthrough));
   let passives: Raw[] = [],
     passivesResolved = !!api.utils.getDestinies;
   try {
-    passives = (api.utils.getDestinies?.(player) ?? []).map(obj);
+    if (!previous || (plan.markets && plan.prices !== false))
+      passives = (api.utils.getDestinies?.(player) ?? []).map(obj);
   } catch {
     passivesResolved = false;
     issues.push("Market passive bonuses are unresolved.");
@@ -220,7 +315,10 @@ export function readWorld(
   );
   if (str(locationState.current)) visited.add(locationState.current);
   const known = new Set(visited);
-  if (api.utils.discoverUnlockedLocations) {
+  for (const id of previous?.knownLocations ?? []) known.add(id);
+  if ((!previous || plan.sources) && api.utils.discoverUnlockedLocations) {
+    // Recompute discovery on access changes; stock/price updates reuse knowledge.
+    for (const id of known) if (!visited.has(id)) known.delete(id);
     try {
       const discovered: Raw[] = [];
       api.utils.discoverUnlockedLocations(flags, discovered);
@@ -243,12 +341,20 @@ export function readWorld(
   const buildingStatus = new Map<string, Availability>();
   const indexedMarkets = new Set<string>();
   const labelCounts = new Map<string, number>();
-  for (const [id, raw] of Object.entries(locations)) {
-    const location = obj(raw),
-      label = translate(location.displayName ?? location.name ?? id);
-    labelCounts.set(label, (labelCounts.get(label) ?? 0) + 1);
-  }
+  if (!previous || plan.sources)
+    for (const [id, raw] of Object.entries(locations)) {
+      const location = obj(raw),
+        label = translate(location.displayName ?? location.name ?? id);
+      labelCounts.set(label, (labelCounts.get(label) ?? 0) + 1);
+    }
   for (const [locationId, locationValue] of Object.entries(locations)) {
+    if (
+      previous &&
+      !plan.sources &&
+      plan.markets !== true &&
+      !(plan.markets instanceof Set && plan.markets.has(locationId))
+    )
+      continue;
     const location = obj(locationValue),
       displayName = translate(
         location.displayName ?? location.name ?? locationId,
@@ -257,11 +363,14 @@ export function readWorld(
       locationName =
         (labelCounts.get(displayName) ?? 0) > 1 && canonicalName !== displayName
           ? `${displayName} · ${canonicalName}`
-          : displayName;
+          : previous && !plan.sources
+            ? (previous.markets.find((m) => m.id === locationId)?.name ??
+              displayName)
+            : displayName;
     for (const building of list(location.buildings)) {
       const status = availability(locationId, building.disabled);
       buildingStatus.set(`${locationId}:${str(building.kind)}`, status);
-      if (building.kind === "recipe") {
+      if (plan.sources && building.kind === "recipe") {
         for (const names of Object.values(obj(building.recipePool)))
           for (const name of Array.isArray(names) ? names : []) {
             const item = addItem({ name });
@@ -279,6 +388,12 @@ export function readWorld(
           }
       }
       if (building.kind !== "market") continue;
+      if (
+        previous &&
+        plan.markets !== true &&
+        !(plan.markets instanceof Set && plan.markets.has(locationId))
+      )
+        continue;
       // The native market view uses the first market building for this location.
       if (indexedMarkets.has(locationId)) continue;
       indexedMarkets.add(locationId);
@@ -317,7 +432,9 @@ export function readWorld(
             0,
           )
         : NaN;
-      const market: Market = {
+      const market: Market = (previous && plan.prices === false
+        ? previous.markets.find((m) => m.id === locationId)
+        : undefined) ?? {
         id: locationId,
         name: locationName,
         availability: status,
@@ -383,8 +500,24 @@ export function readWorld(
                 ? "exhausted"
                 : "available";
           let discount: number | undefined;
+          const priorQuote =
+            plan.prices === false
+              ? previous?.sources
+                  .get(name)
+                  ?.find(
+                    (s) =>
+                      s.id === `market:${locationId}:${name}:${entryIndex}`,
+                  )
+              : undefined;
+          const reusePrice =
+            priorQuote?.cost?.state === "value" &&
+            ["valueModifier", "harmonyAugment", "enchantment"].every(
+              (key) =>
+                JSON.stringify(priorQuote.raw?.[key]) ===
+                JSON.stringify(entry[key]),
+            );
           try {
-            if (charisma !== undefined)
+            if (!reusePrice && charisma !== undefined)
               discount = api.utils.getCharismaDiscount?.(charisma, item.realm);
           } catch {
             /* unresolved */
@@ -394,16 +527,18 @@ export function readWorld(
             harmonyAugment: entry.harmonyAugment,
             enchantment: entry.enchantment,
           };
-          const cost = pricingVerified
-            ? purchasePrice(
-                quotedItem,
-                market,
-                num(entry.valueModifier, 1),
-                discount,
-              )
-            : missing(
-                "Price adapter has not been verified for this game version.",
-              );
+          const cost = reusePrice
+            ? priorQuote!.cost!
+            : pricingVerified
+              ? purchasePrice(
+                  quotedItem,
+                  market,
+                  num(entry.valueModifier, 1),
+                  discount,
+                )
+              : missing(
+                  "Price adapter has not been verified for this game version.",
+                );
           source({
             id: `market:${locationId}:${name}:${entryIndex}`,
             item: name,
@@ -431,113 +566,117 @@ export function readWorld(
         }
       }
     }
-    for (const encounter of list(location.enemies)) {
-      const enemy = obj(encounter.enemy);
-      for (const drop of list(enemy.drops)) {
-        const item = addItem(obj(drop.item));
-        if (!item) continue;
-        const conditionResult = condition(drop.condition),
-          status = availability(locationId, undefined);
-        source({
-          id: `combat:${locationId}:${str(enemy.name)}:${item.name}`,
-          item: item.name,
-          label: str(enemy.name, "Combat"),
-          location: locationName,
-          kind: "farm",
-          availability:
-            conditionResult === false
-              ? "locked"
-              : conditionResult === undefined
-                ? "unknown"
-                : status,
-          repeatable: true,
-          quantity: num(drop.amount, 1),
-          reason: `Drop chance: ${num(drop.chance, 1) * 100}%`,
-          raw: drop,
-          acquires: acquires(item),
-        });
-      }
-    }
-  }
-  const gardenLocations = [...Object.entries(locations)].filter(([, loc]) =>
-    list(obj(loc).buildings).some((b) => b.kind === "herbField"),
-  );
-  for (const [realm, crops] of Object.entries(obj(data.crops)))
-    for (const crop of list(crops)) {
-      const item = addItem({ name: crop.item });
-      if (!item) continue;
-      for (const [id, loc] of gardenLocations) {
-        const status = buildingStatus.get(`${id}:herbField`) ?? "unknown";
-        source({
-          id: `crop:${id}:${realm}:${item.name}`,
-          item: item.name,
-          label: "Herb garden",
-          location: translate(obj(loc).displayName ?? id),
-          kind: "farm",
-          availability:
-            REALMS.indexOf(realm) > REALMS.indexOf(str(player.realm))
-              ? "locked"
-              : crop.cost
-                ? "possible"
-                : status,
-          repeatable: true,
-          quantity: num(crop.yield, 1),
-          reason: crop.cost
-            ? `Requires ${str(crop.cost)}; crop prerequisites need confirmation.`
-            : undefined,
-          raw: crop,
-        });
-      }
-    }
-  for (const mine of Object.values(obj(data.mineConfigs)).map(obj)) {
-    const loc = str(mine.locationName),
-      mineStatus = buildingStatus.get(`${loc}:mine`) ?? "possible";
-    for (const [realm, progression] of Object.entries(obj(mine.chambers)))
-      for (const [progress, chambers] of Object.entries(obj(progression)))
-        for (const chamber of list(chambers)) {
-          const entries =
-            chamber.kind === "ore"
-              ? list(chamber.ores).map((e) => ({ name: str(e.item), raw: e }))
-              : chamber.kind === "vein"
-                ? [{ name: str(chamber.ore), raw: chamber }]
-                : chamber.kind === "random"
-                  ? list(chamber.items).map((e) => ({
-                      name: str(obj(e.item).name),
-                      raw: e,
-                    }))
-                  : [];
-          for (const entry of entries) {
-            const item = addItem({ name: entry.name });
-            if (!item) continue;
-            source({
-              id: `mine:${str(mine.id)}:${realm}:${progress}:${str(chamber.name)}:${item.name}`,
-              item: item.name,
-              label: `${str(chamber.name, "Mine")} · ${realm} ${progress}`,
-              location: loc,
-              kind: chamber.isUnique ? "reward" : "farm",
-              availability:
-                condition(chamber.condition) === false
-                  ? "locked"
-                  : mineStatus === "locked"
-                    ? "locked"
-                    : "possible",
-              repeatable: !chamber.isUnique,
-              reason:
-                "Potential chamber; current depth and generation are not yet resolved.",
-              raw: entry.raw,
-            });
-          }
+    if (plan.sources)
+      for (const encounter of list(location.enemies)) {
+        const enemy = obj(encounter.enemy);
+        for (const drop of list(enemy.drops)) {
+          const item = addItem(obj(drop.item));
+          if (!item) continue;
+          const conditionResult = condition(drop.condition),
+            status = availability(locationId, undefined);
+          source({
+            id: `combat:${locationId}:${str(enemy.name)}:${item.name}`,
+            item: item.name,
+            label: str(enemy.name, "Combat"),
+            location: locationName,
+            kind: "farm",
+            availability:
+              conditionResult === false
+                ? "locked"
+                : conditionResult === undefined
+                  ? "unknown"
+                  : status,
+            repeatable: true,
+            quantity: num(drop.amount, 1),
+            reason: `Drop chance: ${num(drop.chance, 1) * 100}%`,
+            raw: drop,
+            acquires: acquires(item),
+          });
         }
+      }
+  }
+  if (plan.sources) {
+    const gardenLocations = [...Object.entries(locations)].filter(([, loc]) =>
+      list(obj(loc).buildings).some((b) => b.kind === "herbField"),
+    );
+    for (const [realm, crops] of Object.entries(obj(data.crops)))
+      for (const crop of list(crops)) {
+        const item = addItem({ name: crop.item });
+        if (!item) continue;
+        for (const [id, loc] of gardenLocations) {
+          const status = buildingStatus.get(`${id}:herbField`) ?? "unknown";
+          source({
+            id: `crop:${id}:${realm}:${item.name}`,
+            item: item.name,
+            label: "Herb garden",
+            location: translate(obj(loc).displayName ?? id),
+            kind: "farm",
+            availability:
+              REALMS.indexOf(realm) > REALMS.indexOf(str(player.realm))
+                ? "locked"
+                : crop.cost
+                  ? "possible"
+                  : status,
+            repeatable: true,
+            quantity: num(crop.yield, 1),
+            reason: crop.cost
+              ? `Requires ${str(crop.cost)}; crop prerequisites need confirmation.`
+              : undefined,
+            raw: crop,
+          });
+        }
+      }
+    for (const mine of Object.values(obj(data.mineConfigs)).map(obj)) {
+      const loc = str(mine.locationName),
+        mineStatus = buildingStatus.get(`${loc}:mine`) ?? "possible";
+      for (const [realm, progression] of Object.entries(obj(mine.chambers)))
+        for (const [progress, chambers] of Object.entries(obj(progression)))
+          for (const chamber of list(chambers)) {
+            const entries =
+              chamber.kind === "ore"
+                ? list(chamber.ores).map((e) => ({ name: str(e.item), raw: e }))
+                : chamber.kind === "vein"
+                  ? [{ name: str(chamber.ore), raw: chamber }]
+                  : chamber.kind === "random"
+                    ? list(chamber.items).map((e) => ({
+                        name: str(obj(e.item).name),
+                        raw: e,
+                      }))
+                    : [];
+            for (const entry of entries) {
+              const item = addItem({ name: entry.name });
+              if (!item) continue;
+              source({
+                id: `mine:${str(mine.id)}:${realm}:${progress}:${str(chamber.name)}:${item.name}`,
+                item: item.name,
+                label: `${str(chamber.name, "Mine")} · ${realm} ${progress}`,
+                location: loc,
+                kind: chamber.isUnique ? "reward" : "farm",
+                availability:
+                  condition(chamber.condition) === false
+                    ? "locked"
+                    : mineStatus === "locked"
+                      ? "locked"
+                      : "possible",
+                repeatable: !chamber.isUnique,
+                reason:
+                  "Potential chamber; current depth and generation are not yet resolved.",
+                raw: entry.raw,
+              });
+            }
+          }
+    }
   }
   const byOutput = new Map<string, Recipe[]>();
-  for (const recipe of recipes)
-    for (const name of new Set(
-      Object.values(recipe.outputs).map((o) => o.name),
-    )) {
-      const all = byOutput.get(name) ?? [];
-      all.push(recipe);
-      byOutput.set(name, all);
-    }
+  if (!previous || recipeWork)
+    for (const recipe of recipes)
+      for (const name of new Set(
+        Object.values(recipe.outputs).map((o) => o.name),
+      )) {
+        const all = byOutput.get(name) ?? [];
+        all.push(recipe);
+        byOutput.set(name, all);
+      }
   const failed = recipes.filter((r) => r.error).length;
   if (failed)
     issues.push(
@@ -548,11 +687,16 @@ export function readWorld(
   );
   return {
     items,
-    recipes,
-    recipesByOutput: byOutput,
+    knownLocations: previous && !plan.sources ? previous.knownLocations : known,
+    recipes: previous && !recipeWork ? previous.recipes : recipes,
+    recipesByOutput:
+      previous && !recipeWork ? previous.recipesByOutput : byOutput,
     sources,
-    markets,
-    inventory,
+    markets:
+      previous && (!plan.markets || plan.prices === false)
+        ? previous.markets
+        : markets,
+    inventory: previous && !plan.inventory ? previous.inventory : inventory,
     player,
     flags,
     charisma,

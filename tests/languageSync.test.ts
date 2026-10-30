@@ -83,6 +83,12 @@ test("deferred React updates follow English → German → Chinese on the first 
   }
   cleanup();
 });
+test("idle language watching does not enqueue React updates", () => {
+  const cleanup = mount();
+  jest.advanceTimersByTime(10000);
+  expect(queued).toHaveLength(0);
+  cleanup();
+});
 
 test("multiple queued polls retain the latest language and refresh native labels separately", () => {
   const cleanup = mount();

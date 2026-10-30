@@ -543,7 +543,17 @@ export function canCraftNow(
   world: World,
   reservations: Record<string, number>,
 ): boolean {
-  if (!world.recipesByOutput.has(item.name)) return false;
+  const key = JSON.stringify([item.name, reservations]);
+  const stamp = world.revisions
+    ? `${world.revisions.all}:${world.revisions.items.get(item.name) ?? 0}`
+    : "";
+  if (world.memo?.craftability.get(key)?.stamp === stamp)
+    return world.memo.craftability.get(key)!.value;
+  const remember = (value: boolean) => {
+    world.memo?.craftability.set(key, { stamp, value });
+    return value;
+  };
+  if (!world.recipesByOutput.has(item.name)) return remember(false);
   for (const tier of ["basic", "perfect", "sublime"] as Tier[]) {
     const planner = new Planner(
       world,
@@ -552,7 +562,7 @@ export function canCraftNow(
       reservations,
       2000,
     );
-    if (planner.routes(item).length) return true;
+    if (planner.routes(item).length) return remember(true);
   }
-  return false;
+  return remember(false);
 }

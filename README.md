@@ -4,7 +4,7 @@ An in-game crafting and trading calculator for **Ascend From Nine Mountains**.
 Compare ways to earn spirit stones, find market opportunities, and follow a
 caravan plan from a compact overlay.
 
-**Current release:** `0.3.0-alpha.6` · **Target game version:** `0.7.18-97c093b`
+**Current release:** `0.3.0-alpha.7` · **Target game version:** `0.7.18-97c093b`
 
 [Download a release](https://github.com/PommesMitChips/ProfitSeeker/releases) ·
 [Report an issue](https://github.com/PommesMitChips/ProfitSeeker/issues) ·
@@ -132,6 +132,35 @@ testing is still ongoing.
 For a useful bug report, include the game/mod versions, language, selected
 calculator options, item/recipe, expected values and a screenshot. You do not
 need to publish your save file.
+
+## Refresh behavior
+
+Game-state subscription events drive economic updates; there is no timer that
+rebuilds the catalogue or profit tables. Unrelated combat, HP/Qi, calendar and UI
+changes are ignored unless a registered source condition depends on them.
+
+| Change | Work performed |
+| --- | --- |
+| Inventory quantity/variant | Update inventory and affected item/recipe-chain rows |
+| Learning or improving an indexed recipe | Patch that recipe's record and dependent rows |
+| Market stock | Update that market's listings; reuse unchanged unit prices and unrelated arbitrage rows |
+| Reputation or effective charisma | Reprice affected markets; refresh comparisons that may have a new best sale destination |
+| Money/current location | Update caravan inputs, reusing travel distances when still valid |
+| Search, filters or tab selection | Reuse cached calculations; inactive tabs do not calculate in the background |
+| Catalogue/version/language/mod-list changes | Broader invalidation where definitions or labels may have changed |
+
+Closed panels without a caravan plan do no catalogue work. A saved caravan plan
+continues event-driven transaction tracking; untracked pickups do not trigger
+replanning. Recipe-rule and access-condition flags are tracked separately from
+unrelated game flags. Visible table work yields between short batches.
+
+The separate language watcher checks the setting every 100 ms to support the
+game's same-window settings changes. Unchanged checks enqueue no React update
+and do not refresh economic data.
+
+Run `node scripts/benchmark-refresh.cjs` to compare full-rebuild adapter work
+against incremental refreshes using the development fixture. It reports native
+helper call counts and adapter timings, **not live-game FPS**.
 
 ## Development
 

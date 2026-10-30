@@ -1,5 +1,5 @@
 import { useI18n, english, I18n } from "../i18n";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import {
   Box,
   Button,
@@ -126,9 +126,11 @@ function Routes({ row }: { row: ArbitrageRow }) {
 export function ArbitragePanel({
   world,
   native,
+  active = true,
 }: {
   world: World;
   native?: NativeItemComponent;
+  active?: boolean;
 }) {
   const i18n = useI18n(),
     { t } = i18n;
@@ -142,7 +144,11 @@ export function ArbitragePanel({
       key: "profit",
       desc: true,
     });
-  const rows = useMemo(() => cachedArbitrageRows(world), [world]);
+  const retained = useRef<ArbitrageRow[]>([]);
+  const rows = useMemo(() => {
+    if (active) retained.current = cachedArbitrageRows(world);
+    return retained.current;
+  }, [world, active]);
   const filtered = rows.filter(
     (r) =>
       (realm === "all" || r.item.realm === realm) &&

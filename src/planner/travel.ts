@@ -6,6 +6,68 @@ export interface TravelContext {
   days: Record<string, Record<string, number>>;
   reason?: string;
 }
+/** Money and cargo updates do not change the pairwise travel-day matrix. */
+export function createTravelReader() {
+  let previous:
+    | {
+        api: GameAPI;
+        locations: unknown;
+        known: World["knownLocations"];
+        endpoints: string;
+        speed: number;
+        context: TravelContext;
+      }
+    | undefined;
+  return (
+    api: GameAPI,
+    state: Raw,
+    flags: Record<string, number>,
+    world: World,
+  ): TravelContext => {
+    const cash = obj(state.inventory).money,
+      current = str(obj(state.location).current);
+    let speed = NaN;
+    try {
+      speed =
+        api.utils.getMoveSpeedMultiplier?.(
+          obj(obj(state.player).player),
+          obj(state.breakthrough),
+        ) ?? NaN;
+    } catch {}
+    const endpoints = JSON.stringify(
+      [...new Set([current, ...world.markets.map((m) => m.id)])].sort(),
+    );
+    if (
+      previous &&
+      previous.api === api &&
+      previous.locations === api.gameData.locations &&
+      previous.known === world.knownLocations &&
+      previous.endpoints === endpoints &&
+      previous.speed === speed &&
+      !previous.context.reason &&
+      typeof cash === "number" &&
+      Number.isFinite(cash) &&
+      cash >= 0
+    ) {
+      if (
+        previous.context.cash !== cash ||
+        previous.context.current !== current
+      )
+        previous.context = { ...previous.context, cash, current };
+      return previous.context;
+    }
+    const context = travelContext(api, state, flags, world);
+    previous = {
+      api,
+      locations: api.gameData.locations,
+      known: world.knownLocations,
+      endpoints,
+      speed,
+      context,
+    };
+    return context;
+  };
+}
 export function travelContext(
   api: GameAPI,
   state: Raw,

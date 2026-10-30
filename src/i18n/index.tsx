@@ -197,6 +197,7 @@ export function I18nProvider({
   useEffect(() => {
     let cancelled = false,
       last = read();
+    let lastProbe=probe();
     const initialRaw = last;
     // Current game persists sticky settings to disk; localStorage is updated on
     // every language change, but may be stale at startup after synchronization.
@@ -221,6 +222,8 @@ export function I18nProvider({
       const next = read(),
         label = probe(),
         languageChanged = next !== last;
+      if (!languageChanged && label===lastProbe) return;
+      lastProbe=label;
       // React may defer or replay the updater. Capture the comparison before
       // advancing the polling cursor instead of reading mutable `last` inside it.
       last = next;

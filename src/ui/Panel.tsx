@@ -55,7 +55,12 @@ import { ItemPreview, NativeItemComponent, withinPreview } from "./ItemPreview";
 
 import { selectMarkets } from "../query/markets";
 import { MarketSelector } from "./MarketSelector";
-import { ProfitData, useProfitWorld, cacheCraft } from "../state/runtime";
+import {
+  ProfitData,
+  useProfitWorld,
+  cacheCraft,
+  cachedRow,
+} from "../state/runtime";
 import { ArbitragePanel } from "./ArbitragePanel";
 
 const plain = (s: string) => s.replace(/<[^>]*>/g, "");
@@ -330,6 +335,13 @@ function LoadedPanel({
     markets: prefs.marketIds,
     language: i18n.version,
   });
+  const pricingKey = JSON.stringify({
+    known: prefs.filters.known,
+    options: prefs.options,
+    reservations: prefs.reservations,
+    markets: prefs.marketIds,
+    language: i18n.version,
+  });
   const [rows, setRows] = useState<Row[]>(
     () => cache.craft.get(calculationKey)?.rows ?? [],
   );
@@ -351,7 +363,7 @@ function LoadedPanel({
         ? previous
         : incoming,
     );
-  }, [state]);
+  }, [obj(obj(obj(state.mod).data)[MOD_ID]).preferences]);
   const change = (next: Preferences) => {
     setPrefs(next);
     screenAPI.actions?.setModData?.(MOD_ID, "preferences", next);
@@ -364,7 +376,7 @@ function LoadedPanel({
   const options = (patch: Partial<Options>) =>
     change({ ...prefs, options: { ...prefs.options, ...patch } });
   useEffect(() => {
-    if (!world) return;
+    if (!world || mode !== "crafting") return;
     let stopped = false,
       index = 0;
     const result: Row[] = [];
@@ -379,9 +391,15 @@ function LoadedPanel({
     const items = visibleItems(world, prefs);
     const chunk = () => {
       if (stopped) return;
+      const started = performance.now();
       const end = Math.min(index + 8, items.length);
-      for (; index < end; index++)
-        result.push(evaluateRow(items[index], world, prefs));
+      for (; index < end; index++) {
+        result.push(cachedRow(cache, pricingKey, items[index], world, prefs));
+        if (performance.now() - started >= 8) {
+          index++;
+          break;
+        }
+      }
       if (
         index >= items.length ||
         (!hasCached && Date.now() - lastProgress > 150)
@@ -401,7 +419,7 @@ function LoadedPanel({
       stopped = true;
       clearTimeout(timer);
     };
-  }, [world, calculationKey, cache]);
+  }, [world, calculationKey, cache, mode]);
   useEffect(() => {
     const escape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -430,7 +448,7 @@ function LoadedPanel({
   const pinned = useMemo(
     () =>
       selected && world?.items.has(selected)
-        ? evaluateRow(world.items.get(selected)!, world, prefs)
+        ? cachedRow(cache, pricingKey, world.items.get(selected)!, world, prefs)
         : undefined,
     [selected, world, calculationKey],
   );
@@ -530,7 +548,11 @@ function LoadedPanel({
       </Box>
       {world && (
         <Box sx={{ display: mode === "arbitrage" ? "block" : "none" }}>
-          <ArbitragePanel world={world} native={NativeItem} />
+          <ArbitragePanel
+            world={world}
+            native={NativeItem}
+            active={mode === "arbitrage"}
+          />
         </Box>
       )}
       {

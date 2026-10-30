@@ -18,16 +18,59 @@ export interface ArbitrageRow extends Row {
 }
 const cachedRows = new WeakMap<World, ArbitrageRow[]>();
 export function cachedArbitrageRows(world: World): ArbitrageRow[] {
+  if (world.memo && world.revisions) {
+    const key = JSON.stringify(world.markets.map((m) => m.id).sort());
+    const old = world.memo.arbitrage.get(key);
+    if (old?.revision === world.revisions.trade)
+      return old.rows as ArbitrageRow[];
+    const names = new Set([
+      ...marketCatalogue(world).byItem.keys(),
+      ...(old?.rows.map((r) => r.item.name) ?? []),
+    ]);
+    const changed =
+      old && old.all === world.revisions.all
+        ? new Set(
+            [...names].filter(
+              (name) =>
+                old.stamps.get(name) !==
+                (world.revisions!.items.get(name) ?? 0),
+            ),
+          )
+        : undefined;
+    const rows = changed
+      ? [
+          ...(old!.rows.filter(
+            (r) => !changed.has(r.item.name),
+          ) as ArbitrageRow[]),
+          ...arbitrageRows(world, changed),
+        ]
+      : arbitrageRows(world);
+    world.memo.arbitrage.set(key, {
+      revision: world.revisions.trade,
+      all: world.revisions.all,
+      stamps: new Map(
+        [...names].map((name) => [name, world.revisions!.items.get(name) ?? 0]),
+      ),
+      rows,
+    });
+    if (world.memo.arbitrage.size > 8)
+      world.memo.arbitrage.delete(world.memo.arbitrage.keys().next().value!);
+    return rows;
+  }
   const cached = cachedRows.get(world);
   if (cached) return cached;
   const rows = arbitrageRows(world);
   cachedRows.set(world, rows);
   return rows;
 }
-export function arbitrageRows(world: World): ArbitrageRow[] {
+export function arbitrageRows(
+  world: World,
+  onlyItems?: ReadonlySet<string>,
+): ArbitrageRow[] {
   const groups = new Map<string, { item: Item; offers: Source[] }>();
   for (const sources of marketCatalogue(world).byItem.values())
     for (const source of sources) {
+      if (onlyItems && !onlyItems.has(source.item)) continue;
       if (
         source.kind !== "buy" ||
         source.currency !== "Spirit Stones" ||
